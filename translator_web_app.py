@@ -69,7 +69,7 @@ with tab2:
 with tab3:
     st.subheader("📥 YouTube Video Downloader")
     yt_url = st.text_input("Enter YouTube Video URL")
-       if st.button("Download Video"):
+    if st.button("Download Video"):
         try:
             clean_url = yt_url.split("&")[0].split("?")[0] if "youtu.be" in yt_url else yt_url
             yt = YouTube(clean_url)
