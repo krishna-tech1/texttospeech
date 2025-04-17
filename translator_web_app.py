@@ -71,7 +71,8 @@ with tab3:
     yt_url = st.text_input("Enter YouTube Video URL")
     if st.button("Download Video"):
         try:
-            yt = YouTube(yt_url)
+             clean_url = yt_url.split("&")[0].split("?")[0] if "youtu.be" in yt_url else yt_url
+            yt = YouTube(clean_url)
             st.write(f"🎬 Title: {yt.title}")
             st.write(f"📊 Views: {yt.views:,}")
             st.write("⏬ Downloading highest resolution...")
