@@ -66,20 +66,36 @@ with tab2:
             st.image(qr_buffer.getvalue(), caption="QR Code", width=200)
 
 # --- YouTube Downloader ---
+from pytube import YouTube
+import io
+import streamlit as st
+
+# --- YouTube Downloader ---
 with tab3:
     st.subheader("📥 YouTube Video Downloader")
     yt_url = st.text_input("Enter YouTube Video URL")
+
     if st.button("Download Video"):
         try:
-            clean_url = yt_url.split("&")[0].split("?")[0] if "youtu.be" in yt_url else yt_url
+            # Extract actual watch URL from shortened or parameterized URL
+            if "youtu.be" in yt_url:
+                video_id = yt_url.split("/")[-1].split("?")[0]
+                clean_url = f"https://www.youtube.com/watch?v={video_id}"
+            elif "watch?v=" in yt_url:
+                clean_url = yt_url.split("&")[0]
+            else:
+                clean_url = yt_url
+
             yt = YouTube(clean_url)
             st.write(f"🎬 Title: {yt.title}")
             st.write(f"📊 Views: {yt.views:,}")
             st.write("⏬ Downloading highest resolution...")
             stream = yt.streams.get_highest_resolution()
+
             buffer = io.BytesIO()
             stream.stream_to_buffer(buffer)
             buffer.seek(0)
+
             st.download_button(
                 label="📥 Click to Download Video",
                 data=buffer,
