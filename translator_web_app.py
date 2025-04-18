@@ -12,13 +12,14 @@ lang_dict = LANGUAGES
 lang_names = list(lang_dict.values())
 lang_code_dict = {v.title(): k for k, v in lang_dict.items()}
 
+# --- Streamlit Setup ---
 st.set_page_config(page_title="MultiTool App", layout="centered")
 st.title("🛠️ MultiTool App")
 
 # --- Tabs ---
 tab1, tab2, tab3 = st.tabs(["🈯 Translator + TTS", "📱 QR Code Generator", "🤖 Mini AI Chatbot"])
 
-# --- Translator + TTS ---
+# --- Tab 1: Translator + TTS ---
 with tab1:
     st.subheader("🈯 Translator & 🔊 Text-to-Speech")
 
@@ -53,7 +54,7 @@ with tab1:
             except Exception as e:
                 st.error(f"TTS Error: {e}")
 
-# --- QR Code Generator ---
+# --- Tab 2: QR Code Generator ---
 with tab2:
     st.subheader("📱 QR Code Generator")
     qr_text = st.text_input("Enter link or text to generate QR code:")
@@ -66,7 +67,7 @@ with tab2:
             qr_img.save(qr_buffer, format="PNG")
             st.image(qr_buffer.getvalue(), caption="QR Code", width=200)
 
-# --- Mini AI Chatbot ---
+# --- Tab 3: Mini AI Chatbot ---
 with tab3:
     st.subheader("🤖 Mini AI Chatbot")
 
@@ -76,8 +77,8 @@ with tab3:
         "how are you": ["I'm just a bot, but I'm doing great!", "All good here!"],
         "bye": ["Goodbye!", "See you later!", "Bye! Take care!"],
         "thanks": ["You're welcome!", "No problem!", "Anytime!"],
-        "default": ["Sorry, I don't understand that.", "sorry I am just mini project of 1styear bca student", "Hmm, I'm not sure.","you asking lot to me I am just a mini project"]
-        "who created you":["my creator name was krishna.","my creator name was gokul","my creator name was lakshimi"}
+        "default": ["Sorry, I don't understand that.", "sorry I am just a mini project of 1st year BCA student", "Hmm, I'm not sure.", "You’re asking a lot, I’m just a mini project!"],
+        "who created you": ["My creator's name is Krishna.", "I was created by Gokul.", "Lakshimi built me with love."]
     }
 
     def get_response(user_input):
@@ -87,5 +88,19 @@ with tab3:
                 return random.choice(responses[key])
         return random.choice(responses["default"])
 
+    # Maintain chat history
     if "chat_history" not in st.session_state:
-        st.session_state.chat
+        st.session_state.chat_history = []
+
+    # Input and response
+    user_msg = st.text_input("You:", placeholder="Type your message here...")
+
+    if st.button("Send"):
+        if user_msg:
+            reply = get_response(user_msg)
+            st.session_state.chat_history.append(("You", user_msg))
+            st.session_state.chat_history.append(("Bot", reply))
+
+    # Display chat history
+    for speaker, msg in st.session_state.chat_history:
+        st.markdown(f"**{speaker}:** {msg}")
