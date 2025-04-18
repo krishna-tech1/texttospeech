@@ -4,6 +4,7 @@ from gtts import gTTS
 import qrcode
 import io
 from pytube import YouTube
+import random
 
 # --- Setup ---
 translator = Translator()
@@ -15,12 +16,12 @@ st.set_page_config(page_title="MultiTool App", layout="centered")
 st.title("🛠️ MultiTool App")
 
 # --- Tabs ---
-tab1, tab2, tab3 = st.tabs(["🈯 Translator + TTS", "📱 QR Code Generator", "📥 YouTube Downloader"])
+tab1, tab2, tab3 = st.tabs(["🈯 Translator + TTS", "📱 QR Code Generator", "🤖 Mini AI Chatbot"])
 
 # --- Translator + TTS ---
 with tab1:
     st.subheader("🈯 Translator & 🔊 Text-to-Speech")
-    
+
     col1, col2 = st.columns(2)
     with col1:
         src_lang = st.selectbox("From Language", lang_names, index=lang_names.index("english"))
@@ -65,55 +66,26 @@ with tab2:
             qr_img.save(qr_buffer, format="PNG")
             st.image(qr_buffer.getvalue(), caption="QR Code", width=200)
 
-# --- YouTube Downloader ---
-from pytube import YouTube
-import io
-import streamlit as st
-
-# --- YouTube Downloader ---
-# --- YouTube Downloader ---
+# --- Mini AI Chatbot ---
 with tab3:
-    st.subheader("📥 YouTube Video Downloader")
-    yt_url = st.text_input("Enter YouTube Video URL")
+    st.subheader("🤖 Mini AI Chatbot")
 
-    def clean_youtube_url(url):
-        from urllib.parse import urlparse, parse_qs
+    # --- Bot Logic ---
+    responses = {
+        "hello": ["Hi there!", "Hello!", "Hey! How can I help?"],
+        "how are you": ["I'm just a bot, but I'm doing great!", "All good here!"],
+        "bye": ["Goodbye!", "See you later!", "Bye! Take care!"],
+        "thanks": ["You're welcome!", "No problem!", "Anytime!"],
+        "default": ["Sorry, I don't understand that.", "sorry I am just mini project of 1styear bca student", "Hmm, I'm not sure.","you asking lot to me I am just a mini project"]
+        "who created you":["my creator name was krishna.","my creator name was gokul","my creator name was lakshimi"}
+    }
 
-        parsed = urlparse(url)
-        if "youtu.be" in parsed.netloc:
-            video_id = parsed.path.lstrip('/')
-        elif "youtube.com" in parsed.netloc:
-            query = parse_qs(parsed.query)
-            video_id = query.get("v", [None])[0]
-        else:
-            return None
-        
-        if not video_id:
-            return None
-        
-        return f"https://www.youtube.com/watch?v={video_id}"
+    def get_response(user_input):
+        user_input = user_input.lower()
+        for key in responses:
+            if key in user_input:
+                return random.choice(responses[key])
+        return random.choice(responses["default"])
 
-    if st.button("Download Video"):
-        try:
-            clean_url = clean_youtube_url(yt_url)
-            if not clean_url:
-                st.error("Invalid YouTube URL.")
-            else:
-                yt = YouTube(clean_url)
-                st.write(f"🎬 Title: {yt.title}")
-                st.write(f"📊 Views: {yt.views:,}")
-                st.write("⏬ Downloading highest resolution...")
-                stream = yt.streams.get_highest_resolution()
-
-                buffer = io.BytesIO()
-                stream.stream_to_buffer(buffer)
-                buffer.seek(0)
-
-                st.download_button(
-                    label="📥 Click to Download Video",
-                    data=buffer,
-                    file_name=f"{yt.title}.mp4",
-                    mime="video/mp4"
-                )
-        except Exception as e:
-            st.error(f"Download failed: {e}")
+    if "chat_history" not in st.session_state:
+        st.session_state.chat
