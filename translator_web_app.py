@@ -64,12 +64,17 @@ with tab2:
             qr_img.save(qr_buffer, format="PNG")
             st.image(qr_buffer.getvalue(), caption="QR Code", width=200)
 
+# --- Tab 3: Unit Converter --
 # --- Tab 3: Unit Converter ---
 with tab3:
     st.subheader("📏 Unit Converter")
 
-    conversion_type = st.selectbox("Select Conversion Type", ["Length", "Weight", "Temperature"])
+    conversion_type = st.selectbox(
+        "Select Conversion Type",
+        ["Length", "Weight", "Temperature", "Volume", "Area", "Power", "Energy", "Force"]
+    )
 
+    # Units Dictionary Setup
     if conversion_type == "Length":
         units = {
             "Meter": 1,
@@ -91,9 +96,56 @@ with tab3:
             "Ounce": 28.3495
         }
 
+    elif conversion_type == "Volume":
+        units = {
+            "Liter": 1,
+            "Milliliter": 0.001,
+            "Cubic Meter": 1000,
+            "Cubic Centimeter": 0.001,
+            "Gallon": 3.78541,
+            "Pint": 0.473176
+        }
+
+    elif conversion_type == "Area":
+        units = {
+            "Square Meter": 1,
+            "Square Kilometer": 1e6,
+            "Square Centimeter": 0.0001,
+            "Square Millimeter": 1e-6,
+            "Acre": 4046.86,
+            "Hectare": 10000
+        }
+
+    elif conversion_type == "Power":
+        units = {
+            "Watt": 1,
+            "Kilowatt": 1000,
+            "Megawatt": 1e6,
+            "Horsepower": 745.7
+        }
+
+    elif conversion_type == "Energy":
+        units = {
+            "Joule": 1,
+            "Kilojoule": 1000,
+            "Calorie": 4.184,
+            "Kilocalorie": 4184,
+            "Watt-hour": 3600,
+            "Kilowatt-hour": 3.6e6
+        }
+
+    elif conversion_type == "Force":
+        units = {
+            "Newton": 1,
+            "Kilonewton": 1000,
+            "Dyne": 1e-5,
+            "Pound-force": 4.44822
+        }
+
     elif conversion_type == "Temperature":
         units = {}
 
+    # Conversion Logic
     if conversion_type != "Temperature":
         amount = st.number_input("Enter value", value=0.0)
         from_unit = st.selectbox("From", list(units.keys()))
@@ -102,6 +154,7 @@ with tab3:
         if st.button("Convert"):
             result = amount * units[from_unit] / units[to_unit]
             st.success(f"{amount} {from_unit} = {result:.4f} {to_unit}")
+
     else:
         temp = st.number_input("Enter temperature", value=0.0)
         from_temp = st.selectbox("From", ["Celsius", "Fahrenheit", "Kelvin"])
@@ -112,7 +165,7 @@ with tab3:
                 return value
             if from_u == "Celsius":
                 if to_u == "Fahrenheit":
-                    return value * 9/5 + 32
+                    return (value * 9/5) + 32
                 elif to_u == "Kelvin":
                     return value + 273.15
             elif from_u == "Fahrenheit":
